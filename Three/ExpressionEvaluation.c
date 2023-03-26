@@ -203,5 +203,3 @@ int main(){
     system("pause");
     return 0;
 }
-//Îâ×ÓºÀ
-//¹ş¹ş¹ş
