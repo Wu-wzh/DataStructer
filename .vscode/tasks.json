@@ -1,0 +1,31 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558 
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+        "type": "shell",
+        "label": "task g++",
+        "command": "E:\\MinGW64\\bin\\gcc.exe",	
+        "args": [
+            "-g",
+            "${file}",
+            "-o",
+            "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "-I",
+            "E:\\DataStructure", 
+            // "-std=c++17",
+            "-std=c11"
+        ],
+        "options": {
+            "cwd": "E:\\MinGW64\\bin"
+        },
+        "problemMatcher":[
+            "$gcc"
+        ],
+        "group": "build",
+        
+        }
+    ]
+}
+

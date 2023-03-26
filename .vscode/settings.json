@@ -1,0 +1,13 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        ".c": "c",
+        "windows.h": "c",
+        "ShareSequentialStack.C": "cpp",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "LinkQueue.C": "cpp",
+        "stdio.h": "c"
+    }
+}
