@@ -14,14 +14,10 @@ void InitList(SeqList *L){
     L->length = 0;
 }
 
-// void InitList_dirty_data(SeqList &L){
-//     L.length = 10;
-// }
 
 int main(){
     SeqList L;
     InitList(&L);
-    // InitList_dirty_data(L);
     for (int i = 0; i < L.length; i++)
         printf("data[%d] = %d \n", i, L.data[i]);
     system("pause");
