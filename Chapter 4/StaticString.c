@@ -57,6 +57,15 @@ int Concat(SString *S, char S1[], char S2[]){
     return true;
 }
 
+int SubString(SString *Sub, SString S, int pos, int len){
+    if (pos + len - 1 > S.length) return false;
+    for (int i = pos; i < pos + len; i++){
+        Sub->ch[i - pos + 1] = S.ch[i];
+    }
+    Sub->length = len;
+    return true;
+}
+
 void printStr(SString S){
     for (int i = 1; i < S.length + 1; i++){
         printf("%c", S.ch[i]);
@@ -73,29 +82,31 @@ int main(){
     printf("S: ");
     printStr(S); // 输出：wuzihaoasdds
 
-    // 复制操作
-    StrCopy(&T, S);
-    printf("T: ");
-    printStr(T); // 输出：wuzihaoasdds
-
-    // 求串长操作
-    printf("S Length: %d\n", StrLength(S)); // 输出：13
-
-    // 清空操作
-    ClearString(&S);
-    printf("S: ");
-    printStr(S); // 输出：
-
-    // 销毁操作
-    DestoryString(&T);
+    // // 复制操作
+    // StrCopy(&T, S);
     // printf("T: ");
-    // printStr(T); // 此处调用已被销毁的 T，可能会导致异常
+    // printStr(T); // 输出：wuzihaoasdds
 
-    // 连接操作
-    Concat(&S, "wuzi", "haohaha");
-    printf("S: ");
-    printStr(S); // 输出：wuzihaohaha
+    // // 求串长操作
+    // printf("S Length: %d\n", StrLength(S)); // 输出：13
 
+    // // 清空操作
+    // ClearString(&S);
+    // printf("S: ");
+    // printStr(S); // 输出：
+
+    // // 销毁操作
+    // DestoryString(&T);
+    // // printf("T: ");
+    // // printStr(T); // 此处调用已被销毁的 T，可能会导致异常
+
+    // // 连接操作
+    // Concat(&S, "wuzi", "haohaha");
+    // printf("S: ");
+    // printStr(S); // 输出：wuzihaohaha
+    SString Sub;
+    SubString(&Sub, S, 3, 2);
+    printStr(Sub);
     system("pause");
     return 0;
     
