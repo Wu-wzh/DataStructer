@@ -21,12 +21,12 @@ int StrAssign(SString *S, char chars[]){
         if (i + 2 == MaxSize) return false;
         S->ch[i + 1] = chars[i];
     }
-    S->length = i + 1;
+    S->length = i;
     return true;
 }
 
 void StrCopy(SString *T, SString S){
-    for (int i = 0; i < S.length; i++){
+    for (int i = 0; i < S.length + 1; i++){
         T->ch[i] = S.ch[i];
     }
     T->length = S.length;
@@ -41,23 +41,24 @@ void ClearString(SString *S){
 }
 
 void DestoryString(SString *S){
-    free(S);
     S = NULL;
+    free(S);
+    
 }
 
 int Concat(SString *S, char S1[], char S2[]){
     int i, j;
     for (i = 0; S1[i] != '\0'; i++)
         S->ch[i + 1] = S1[i];
-    S->length = i + 1;
+    S->length = i;
     for (j = 0; S2[j] != '\0'; j++)
-        S->ch[S->length + j] = S2[j];
+        S->ch[S->length + 1 + j] = S2[j];
     S->length += j;
     return true;
 }
 
 void printStr(SString S){
-    for (int i = 1; i < S.length; i++){
+    for (int i = 1; i < S.length + 1; i++){
         printf("%c", S.ch[i]);
     }
     printf("\n");
