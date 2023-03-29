@@ -25,11 +25,10 @@ int StrAssign(SString *S, char chars[]){
     return true;
 }
 
-void StrCopy(SString *T, SString S){
+void StrCopy(char *s, SString S){
     for (int i = 0; i < S.length + 1; i++){
-        T->ch[i] = S.ch[i];
+        s[i] = S.ch[i];
     }
-    T->length = S.length;
 }
 
 int StrLength(SString S){
@@ -105,20 +104,45 @@ int NaviePatternMatching(SString S, SString T){
     
 }
 
+
+//求next数组，就是比较看前j个字串的前缀的头和后缀的末尾之间有多少字符可以匹配， 理解前缀和和后缀很关键
+//一个串的前缀为除了最后一个字符外的所有字符构成的子串，后缀为除第一个字符
+void Next(SString T,int *next)
+{
+    char s[T.length + 1];
+    StrCopy(s, T);
+    next[1] = 0;
+    int i = 1, j = 0;
+    while (i <= strlen(s))
+    {
+        if (j == 0 || s[i] == s[j]) next[++i] = ++j;
+        else j = next[j];
+    }
+    
+}
+
+
 //KMP算法为朴素模式匹配的改进，在匹配过程中，j后移时，后移过的元素说明已经成功匹配，因此i的值不需要一个一个的移动
 //KMP算法充分利用了模式串信息，减小匹配次数 与朴素模式匹配相比，i指针不需要回溯，这是很重要的
 //模式串的信息可以用一个数组next来存储，所以算法的关键在于模式串的next数组的信息
 int KMP(SString S, SString T){
 
+    
     //求next数组
     int next[T.length + 1];
-    next[1] = 0; 
-    //无论任何模式串，其next[1]都是0，既第一个元素就不匹配时，直接将j设为0，然后i和j同时加一，这样做的好处是让代码变得更简洁
-    next[2] = 1;
-    //无论任何模式串，其next[2]都是1
+    char s[T.length + 1];
+    StrCopy(s, T);
+    next[1] = 0;
+    int a = 1, b = 0;
+    while (a <= T.length + 1)
+    {
+        if (b == 0 || s[a] == s[b]) next[++a] = ++b;
+        else b = next[b];
+    }
 
-
-
+    // for (int c = 1; c < T.length + 1; c++){
+    //     printf("%d ",next[c]);
+    // }
     int i = 1, j = 1;
     while (i <= S.length && j <= T.length)
     {
@@ -126,7 +150,7 @@ int KMP(SString S, SString T){
             i++; j++;
         }
         else
-            j = next[i]; //此步是关键，也是与朴素模式匹配最大的不同，本质上是优化版的暴搜
+            j = next[j]; //此步是关键，也是与朴素模式匹配最大的不同，本质上是优化版的暴搜
     }
     if (j > T.length) return i - T.length;
     else return 0;  
@@ -142,11 +166,10 @@ void printStr(SString S){
 
 int main(){
     SString S, T;
-
+    char s[] = "adassadababacaxzc"; 
+    char sub[] = "ababac"; 
     // 赋值操作
-    char s1[] = "wuzihaoasdds";
-    StrAssign(&S, s1);
-    char sub[] = "uzi"; 
+    StrAssign(&S, s);
     StrAssign(&T, sub);
     // printf("S: ");
     // printStr(S); // 输出：wuzihaoasdds
@@ -177,7 +200,10 @@ int main(){
     // SubString(&Sub, S, 3, 2);
     // printStr(Sub);
     // printf("%d\n",StrCompare(S, T));
-    printf("%d\n", NaviePatternMatching(S, T));
+    // printf("%d\n", NaviePatternMatching(S, T));
+    // printf("%d\n", KMP(S, T));
+    printf("%d\n", KMP(S, T));
+    
     system("pause");
     return 0;
     

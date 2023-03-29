@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <windows.h>
+#define true 1
+#define false 0
 
 // 队列元素结构体
 typedef struct deque_node {
@@ -25,12 +27,12 @@ void init_deque(deque *d, int capacity) {
 }
 
 // 判断双端队列是否为空
-bool is_empty(deque *d) {
+int is_empty(deque *d) {
     return d->front == NULL;
 }
 
 // 判断双端队列是否已满
-bool is_full(deque *d) {
+int is_full(deque *d) {
     return d->size == d->capacity;
 }
 
@@ -180,6 +182,6 @@ for (int i = 1; i <= 9; i++) {
     pop_front(&d);
 }
 printf("%d\n", is_empty(&d)); // true
-
+system("pause");
 return 0;
 }
