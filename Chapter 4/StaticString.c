@@ -132,6 +132,8 @@ int KMP(SString S, SString T){
     //详情观看b站视频https://www.bilibili.com/video/BV16X4y137qw/?spm_id_from=333.788.recommend_more_video.0&vd_source=290b4926ed46d8a51cf18bf938e26eea
     //next[i]的值为第i个字符前面的字串的前后缀最大匹配次数 + 1 并且定义next[1] = 0;
     //需要注意的是，一个字符串的next数组与其最后一个字符没有关系，事实上求解next数组的过程并不会使用到最后一个字符（求的是除这个字符外的前面字串的前后缀最大匹配次数 + 1）
+
+   
     int next[T.length + 1];
     char s[T.length + 1];
     StrCopy(s, T);
@@ -143,6 +145,16 @@ int KMP(SString S, SString T){
         else b = next[b];
     }
 
+//优化next数组 其目的是避免没必要的比较
+// //next数组具有单调不减的性质，并且每次最多增加1,因此有如下优化next数组代码
+    char nextval [T.length + 1];
+    nextval[1] = 0;
+    for (int c = 2; c < T.length; c++){
+        if (T.ch[c] == T.ch[next[c]]) nextval[c] = nextval[next[c]];
+        else nextval[c] = next[c];
+    }
+
+
 //求出next数组之后，遇到冲突字符之后，只会将j回溯，i从始至终是不会减少的，由此大大减小了代码的时间复杂度
     int i = 1, j = 1;
     while (i <= S.length && j <= T.length)
@@ -151,7 +163,7 @@ int KMP(SString S, SString T){
             i++; j++;
         }
         else
-            j = next[j]; //此步是关键，也是与朴素模式匹配最大的不同，本质上是优化版的暴搜
+            j = nextval[j]; //此步是关键，也是与朴素模式匹配最大的不同，本质上是优化版的暴搜
     }
     if (j > T.length) return i - T.length;
     else return 0;  
@@ -168,10 +180,12 @@ void printStr(SString S){
 int main(){
     SString S, T;
     char s[] = "adassadababacaxzc"; 
-    char sub[] = "ababac"; 
+    char sub[] = "babac"; 
     // 赋值操作
     StrAssign(&S, s);
     StrAssign(&T, sub);
+    printStr(S);
+    printStr(T);
     // printf("S: ");
     // printStr(S); // 输出：wuzihaoasdds
 
@@ -203,7 +217,7 @@ int main(){
     // printf("%d\n",StrCompare(S, T));
     // printf("%d\n", NaviePatternMatching(S, T));
     // printf("%d\n", KMP(S, T));
-    printf("%d\n", KMP(S, T));
+    printf("在第%d个字符匹配成功。\n", KMP(S, T));
     
     system("pause");
     return 0;
