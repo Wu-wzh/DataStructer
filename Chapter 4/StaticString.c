@@ -129,6 +129,9 @@ int KMP(SString S, SString T){
 
     
     //求next数组
+    //详情观看b站视频https://www.bilibili.com/video/BV16X4y137qw/?spm_id_from=333.788.recommend_more_video.0&vd_source=290b4926ed46d8a51cf18bf938e26eea
+    //next[i]的值为第i个字符前面的字串的前后缀最大匹配次数 + 1 并且定义next[1] = 0;
+    //需要注意的是，一个字符串的next数组与其最后一个字符没有关系，事实上求解next数组的过程并不会使用到最后一个字符（求的是除这个字符外的前面字串的前后缀最大匹配次数 + 1）
     int next[T.length + 1];
     char s[T.length + 1];
     StrCopy(s, T);
@@ -140,9 +143,7 @@ int KMP(SString S, SString T){
         else b = next[b];
     }
 
-    // for (int c = 1; c < T.length + 1; c++){
-    //     printf("%d ",next[c]);
-    // }
+//求出next数组之后，遇到冲突字符之后，只会将j回溯，i从始至终是不会减少的，由此大大减小了代码的时间复杂度
     int i = 1, j = 1;
     while (i <= S.length && j <= T.length)
     {
