@@ -40,17 +40,27 @@ BiTree CreateTree_1(BiTree T){
     else{
         T = (BiTree)malloc(sizeof(BiNode));
         T->data = data;
-        T->left = CreateTree(T->left);
-        T->right = CreateTree(T->right);
+        T->left = CreateTree_1(T->left);
+        T->right = CreateTree_1(T->right);
     }
     return T;
+}
+
+
+//Ç°Ðò±éÀú
+void PreOrder(BiTree T){
+    if (T != NULL){
+        printf("%d\n", T->data);
+        PreOrder(T->left);
+        PreOrder(T->right);
+    }
 }
 
 int main(){
     BiTree T;
     InitTree(&T);
     CreateTree(&T);
-    printf("123");
+    PreOrder(T);
     system("pause");
     return 0;
 }
