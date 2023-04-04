@@ -16,6 +16,62 @@ void InitTree(BiTree *T){
     (*T) = NULL;
 }
 
+//栈的实现
+
+typedef struct LinkNode{
+    struct BiNode* node;
+    struct LinkNode* next;
+}LinkNode, *LStatic;
+
+//带头结点
+int InitStack(LStatic* S){
+    *S = (LinkNode*) malloc(sizeof(LinkNode));
+    if (*S == NULL) return false;
+    (*S)->next = NULL;
+    return true;
+}
+
+int Push(LStatic* S, BiNode* T){ 
+    if (*S == NULL) return false;
+    LinkNode* l = (LinkNode*)malloc(sizeof(LinkNode));
+    l->node = (BiNode*)T;
+    l->next = (*S)->next;
+    (*S)->next = l;
+    return true;
+}
+
+BiNode* Pop(LStatic* S){
+    if ((*S)->next == NULL) return false;
+    BiNode *t;
+    LinkNode* p = (*S)->next;
+    t = (BiNode*)p->node;
+    (*S)->next = p->next;
+    free(p);
+    return t;
+}
+
+BiNode* GetTop(LStatic S){
+    BiNode* t;
+    if (S->next == NULL) return false;
+    t = (BiNode*)S->next->node;
+    return t;
+}
+
+int Empty(LStatic L){
+    return L->next == NULL;
+}
+void printStack(LStatic S){
+    LinkNode* t = (LinkNode*)malloc(sizeof(LinkNode));
+    t = S->next;
+    while (t != NULL)
+    {
+        //先要初始化，不能直接用t->node->data
+        BiNode* x = (BiNode*)t->node;
+        printf("%d\n",x->data);
+        t = t->next;
+    }
+    
+}
 
 //使用二级指针建立树
 void CreateTree(BiTree *T){
@@ -56,11 +112,103 @@ void PreOrder(BiTree T){
     }
 }
 
+//非递归实现的前序遍历
+void PreOrder_NoRecursion(BiTree T){
+    LStatic L;
+    InitStack(&L);
+
+    if (T == NULL) return;
+
+    BiNode *s = T;
+    //将所有的左子树入栈
+    while (s != NULL)
+    {
+        printf("%d\n",s->data);
+        Push(&L, s);
+        s = s->left;
+    }
+
+    //对右子树进行同样的策略，直到链栈为空
+    while (!Empty(L))
+    {
+        BiNode* top = GetTop(L);
+        BiNode* t = top->right;
+        Pop(&L);
+        while (t != NULL)
+        {
+            printf("%d\n",t->data);
+            Push(&L, t);
+            t = t->left;
+        }
+    }
+    
+
+    // printStack(L);
+
+}
+
+//中序遍历
+void InOrder(BiTree T){
+    if (T != NULL){
+        PreOrder(T->left);
+        printf("%d\n", T->data);
+        PreOrder(T->right);
+    }
+}
+//非递归实现的前序遍历
+void InOrder_NoRecursion(BiTree T){
+    LStatic L;
+    InitStack(&L);
+
+    if (T == NULL) return;
+
+    BiNode *s = T;
+    //将所有的左子树入栈
+    while (s != NULL)
+    {
+        Push(&L, s);
+        s = s->left;
+    }
+
+    //对右子树进行同样的策略，直到链栈为空
+    while (!Empty(L))
+    {
+        BiNode* top = GetTop(L);
+        BiNode* t = top->right;
+        BiNode* x = Pop(&L);
+        printf("%d\n",x->data);
+        while (t != NULL)
+        {
+            Push(&L, t);
+            t = t->left;
+        }
+    }
+    
+
+    // printStack(L);
+
+}
+//后序遍历
+void PostOrder(BiTree T){
+    if (T != NULL){
+        PreOrder(T->left);
+        PreOrder(T->right);
+        printf("%d\n", T->data);
+    }
+}
+
+
+
 int main(){
     BiTree T;
     InitTree(&T);
     CreateTree(&T);
-    PreOrder(T);
+    // printf("前序遍历：\n");
+    InOrder_NoRecursion(T);
+    // printf("中序遍历：\n");
+    // InOrder(T);
+    // printf("后序遍历：\n");
+    // PostOrder(T);
     system("pause");
     return 0;
 }
