@@ -34,7 +34,7 @@ int InitStack(LStatic* S){
 int Push(LStatic* S, BiNode* T){ 
     if (*S == NULL) return false;
     LinkNode* l = (LinkNode*)malloc(sizeof(LinkNode));
-    l->node = (BiNode*)T;
+    l->node = (struct BiNode*)T;
     l->next = (*S)->next;
     (*S)->next = l;
     return true;
