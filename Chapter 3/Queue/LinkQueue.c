@@ -52,6 +52,7 @@ int DeQueue(LinkQueue *Q, int *x){
     *x = p->data;
     Q->front->next = p->next;
     if (p == Q->tail) Q->front = Q->tail;
+    p = NULL;
     free(p);
     return true;
 }
@@ -64,7 +65,7 @@ int DeQueue_NoHead(LinkQueue *Q, int *x){
         Q->front = NULL;
         Q->tail = NULL;
     }
-    free(p);
+    // free(p);
     return true;
 }
 
@@ -74,7 +75,7 @@ int isEmpty(LinkQueue Q){
 }
 
 void printQueue(LinkQueue Q){
-    LinkNode *p = Q.front->next;
+    LinkNode *p = Q.front;
     while (p->next != NULL){
         printf("%d<-", p->data);
         p = p->next;
@@ -85,10 +86,7 @@ int main(){
     LinkQueue Q;
     InitQueue(&Q);
     EnQueue(&Q, 1);
-    EnQueue(&Q, 2);
-    EnQueue(&Q, 3);
-    EnQueue(&Q, 4);
-    printQueue(Q);
+    // EnQueue(&Q, 1);
     int x;
     DeQueue(&Q, &x);
     printQueue(Q);
