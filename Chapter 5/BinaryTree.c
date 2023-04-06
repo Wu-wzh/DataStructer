@@ -40,21 +40,19 @@ int Push(LStatic* S, BiNode* T){
     return true;
 }
 
-BiNode* Pop(LStatic* S){
+int Pop(LStatic* S, BiNode** p){
     if ((*S)->next == NULL) return false;
-    BiNode *t;
-    LinkNode* p = (*S)->next;
-    t = (BiNode*)p->node;
-    (*S)->next = p->next;
-    free(p);
-    return t;
+    LinkNode* n = (*S)->next;
+    (*p) = (BiNode*)n->node;
+    (*S)->next = n->next;
+    free(n);
+    return true;
 }
 
-BiNode* GetTop(LStatic S){
-    BiNode* t;
+int GetTop(LStatic S, BiNode** t){
     if (S->next == NULL) return false;
-    t = (BiNode*)S->next->node;
-    return t;
+    (*t) = (BiNode*)S->next->node;
+    return true;
 }
 
 int Empty(LStatic L){
@@ -71,6 +69,11 @@ void printStack(LStatic S){
         t = t->next;
     }
     
+}
+
+void vist(BiNode* p){
+    if (p == NULL) return;
+    else printf("%d\n", p->data);
 }
 
 //使用二级指针建立树
@@ -119,33 +122,43 @@ void PreOrder_NoRecursion(BiTree T){
 
     if (T == NULL) return;
 
-    BiNode *s = T;
-    //将所有的左子树入栈
-    while (s != NULL)
+    BiNode *p = T;
+    while (p || !Empty(L))
     {
-        printf("%d\n",s->data);
-        Push(&L, s);
-        s = s->left;
-    }
-
-    //对右子树进行同样的策略，直到链栈为空
-    while (!Empty(L))
-    {
-        BiNode* top = GetTop(L);
-        BiNode* t = top->right;
-        Pop(&L);
-        while (t != NULL)
+        if (p)
         {
-            printf("%d\n",t->data);
-            Push(&L, t);
-            t = t->left;
+            Push(&L, p);
+            vist(p);
+            p = p->left;
         }
+        else{
+            Pop(&L, &p);
+            p = p->right;
+        }
+        
     }
-    
-
-    // printStack(L);
-
 }
+    //将所有的左子树入栈
+    // while (s != NULL)
+    // {
+    //     printf("%d\n",s->data);
+    //     Push(&L, s);
+    //     s = s->left;
+    // }
+
+    // //对右子树进行同样的策略，直到链栈为空
+    // while (!Empty(L))
+    // {
+    //     BiNode* top = GetTop(L);
+    //     BiNode* t = top->right;
+    //     Pop(&L);
+    //     while (t != NULL)
+    //     {
+    //         printf("%d\n",t->data);
+    //         Push(&L, t);
+    //         t = t->left;
+    //     }
+    // }
 
 //中序遍历
 void InOrder(BiTree T){
@@ -162,30 +175,21 @@ void InOrder_NoRecursion(BiTree T){
 
     if (T == NULL) return;
 
-    BiNode *s = T;
-    //将所有的左子树入栈
-    while (s != NULL)
+    BiNode *p = T;
+    while (p || !Empty(L))
     {
-        Push(&L, s);
-        s = s->left;
-    }
-
-    //对右子树进行同样的策略，直到链栈为空
-    while (!Empty(L))
-    {
-        BiNode* top = GetTop(L);
-        BiNode* t = top->right;
-        BiNode* x = Pop(&L);
-        printf("%d\n",x->data);
-        while (t != NULL)
+        if (p)
         {
-            Push(&L, t);
-            t = t->left;
+            Push(&L, p);
+            p = p->left;
         }
+        else{
+            Pop(&L, &p);
+            vist(p);
+            p = p->right;
+        }
+        
     }
-    
-
-    // printStack(L);
 
 }
 //后序遍历
@@ -196,6 +200,34 @@ void PostOrder(BiTree T){
         printf("%d\n", T->data);
     }
 }
+void PostOrder_NoRecursion(BiTree T){
+    LStatic L;
+    InitStack(&L);
+    BiNode *p = T; 
+    BiNode *r = NULL;//可以理解为初始化叶子节点的右节点为null
+    //p为遍历节点,r为记录当前节点右孩子的辅助节点
+    while (p || !Empty(L))
+    {
+        if (p){ //走到最左边
+            Push(&L, p);
+            p  = p->left;
+        }
+        else{
+            //先不着急出栈，需要判读栈顶元素的右节点是否被访问过，访问过之后才进行出栈
+            GetTop(L, &p);
+            if (p->right && p->right != r)  p = p->right; //若p的右节点不为空或者未被访问过，先不进行出栈，向右子树寻找可以出栈的值
+            else{
+                Pop(&L, &p);
+                vist(p);
+                r = p; //r赋值为p，保存p节点信息，若后续判断是否出栈时，上次保存的r一定是新p的右孩子
+                p = NULL;//直接进入第一个else分支
+                //p必须要赋空，若不赋空，会导致同一个节点多次入栈
+                //因为在前序和中序遍历中，else中都执行了取右孩子操作，但此else分支中的else分支，并没有进行取右节点操作
+            }
+        }
+    }
+    
+}
 
 
 
@@ -203,12 +235,15 @@ int main(){
     BiTree T;
     InitTree(&T);
     CreateTree(&T);
-    // printf("前序遍历：\n");
-    InOrder_NoRecursion(T);
-    // printf("中序遍历：\n");
+    printf("前序遍历：\n");
+    // PreOrder(T);
+    PreOrder_NoRecursion(T);
+    printf("中序遍历：\n");
     // InOrder(T);
-    // printf("后序遍历：\n");
+    InOrder_NoRecursion(T);
+    printf("后序遍历：\n");
     // PostOrder(T);
+    PostOrder_NoRecursion(T);
     system("pause");
-    return 0;
+    return 0; 
 }
