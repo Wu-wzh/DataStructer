@@ -173,22 +173,24 @@ void CreatePostThread(ThreadTree *T){
     }
 }
 
+//==============================================================================//
+//==============================================================================//
+//==============================================================================//
 
 //中序线索二叉树的遍历
 
-
 //首先封装两个重要函数，求特定节点的前驱和求前驱遍历的第一个节点，有了线索树之后，便不用每次进行遍历这么复杂寻找了
-ThreadNode *FirstNode(ThreadNode *p){
+ThreadNode *InFirstNode(ThreadNode *p){
     while (p->ltag == 0) p = p->left;
     return p;
 }
 //获取第一个遍历节点在三种遍历方式中都不一样
 
-ThreadNode *NextNode(ThreadNode *p){
+ThreadNode *InNextNode(ThreadNode *p){
 
     //若右节点不是后继节点，则寻找右子树中第一个访问的元素，即为此节点的后继节点
     //而寻找右子树第一个访问的元素便可调用上面的FirstNode函数
-    if (p->rtag == 0) return FirstNode(p->right);
+    if (p->rtag == 0) return InFirstNode(p->right);
 
     //若右节点就是后继节点，直接返回即可
     else return p->right;
@@ -197,22 +199,22 @@ ThreadNode *NextNode(ThreadNode *p){
 //封装玩上面两个函数之后，便可以通过一个for循环，从第一个遍历节点开始
 //，不断调用nextnode函数，直到p为空(遍历最后的元素是右指针必为空，上文已经解释过为什么)。
 void InOrder(ThreadNode *T){
-    for (ThreadNode* p = FirstNode(T); p != NULL; p = NextNode(p))
+    for (ThreadNode* p = InFirstNode(T); p != NULL; p = InNextNode(p))
         vist(p);
 }
 
 //按照相同的逻辑实现中序线索二叉树逆向的遍历
-ThreadNode *LastNode(ThreadNode *p){
+ThreadNode *InLastNode(ThreadNode *p){
     while (p->rtag == 0) p = p->right;
     return p;
 }
 //获取第一个遍历节点在三种遍历方式中都不一样
 
-ThreadNode *PreNode(ThreadNode *p){
+ThreadNode *InPreNode(ThreadNode *p){
 
     //若右节点不是后继节点，则寻找右子树中第一个访问的元素，即为此节点的后继节点
     //而寻找右子树第一个访问的元素便可调用上面的FirstNode函数
-    if (p->ltag == 0) return LastNode(p->left);
+    if (p->ltag == 0) return InLastNode(p->left);
 
     //若右节点就是后继节点，直接返回即可
     else return p->left;
@@ -221,18 +223,100 @@ ThreadNode *PreNode(ThreadNode *p){
 //封装玩上面两个函数之后，便可以通过一个for循环，从第一个遍历节点开始
 //，不断调用nextnode函数，直到p为空(遍历最后的元素是右指针必为空，上文已经解释过为什么)。
 void RevInOrder(ThreadNode *T){
-    for (ThreadNode* p = LastNode(T); p != NULL; p = PreNode(p))
+    for (ThreadNode* p = InLastNode(T); p != NULL; p = InPreNode(p))
         vist(p);
 }
+
+
+
+//==============================================================================//
+//==============================================================================//
+//==============================================================================//
+
+
+
+//先序线索二叉树的遍历
+
+//先序遍历的第一个节点一定是根节点，因此不需要编写FirstNode函数
+
+//寻找先序线索化之后的指定节点的后继节点
+ThreadNode *PreNextNode(ThreadNode *p){
+
+    //若右节点就是后继节点，直接返回即可
+    if (p->rtag == 1)
+        return p->right;
+    else{
+        if (p->left == NULL) return p->right;
+        else return p->left;
+    }
+
+}
+
+void PreOrder(ThreadNode *T){
+    for (ThreadNode* p = T; p != NULL; p = PreNextNode(p))
+        vist(p);
+}
+
+
+//寻找先序遍历的最后一个节点，就是遍历一遍先序线索二叉树
+ThreadNode *PreLastNode(ThreadNode *p){
+    while (p->rtag == 0) p = p->right;
+    return p;
+}
+
+//现实先序线索树的任意节点的前驱节点，用当前存储结构需要遍历整个树，
+//可通过添加一个前驱指针来解决这一问题
+// ThreadNode *PrePreNode(ThreadNode *p){}
+
+
+
+//==============================================================================//
+//==============================================================================//
+//==============================================================================//
+
+
+
+//后续线索二叉树的遍历
+
+//寻找指定节点的后继节点
+
+//同样难以查找，需要遍历整个树，考虑用三叉链表实现
+// ThreadNode *PostNextNode(ThreadNode *p){}
+
+//找前驱比较简单
+
+ThreadNode *PostPreNode(ThreadNode *p){
+    if (p->ltag == 1) return p->left;
+
+    //若左节点就是前驱节点，直接返回即可
+    else{
+        if (p->right != NULL) return p->right;
+        else return p->left;
+    }
+}
+
+//封装玩上面两个函数之后，便可以通过一个for循环，从第一个遍历节点开始
+//，不断调用nextnode函数，直到p为空(遍历最后的元素是右指针必为空，上文已经解释过为什么)。
+
+//逆序输出后序遍历结果，从最后一个节点既根节点开始
+void RevPostOrder(ThreadNode *T){
+    for (ThreadNode* p = T; p != NULL; p = PostPreNode(p))
+        vist(p);
+}
+
 
 
 int main(){
     ThreadTree T;
     CreateTree(&T);
-    CreateInThread(&T);
-    InOrder(T);
+    // CreateInThread(&T);
+    // CreatePreThread(&T);
+    CreatePostThread(&T);
+    // InOrder(T);
+    // PreOrder(T);
+    RevPostOrder(T);
     printf("==============\n");
-    RevInOrder(T);
+    // RevInOrder(T);
     system("pause");
     return 0;
 }
