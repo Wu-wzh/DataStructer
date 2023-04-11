@@ -1,0 +1,49 @@
+普通树的存储结构
+1.双亲表示法，用一个二维数组存储，第一个维度为节点名称，第二个维度为此节点的父节点在数组中的位置
+规定根节点的父节点为-1
+如 
+索引 第一维度 第二维度
+ 0      A      -1    代表的树为              A
+ 1      B      0                         /  |  \
+ 2      C      0                        B    C    D                       
+ 3      D      0                       / \
+ 4      E      1                      E   F
+ 5      F      1                       
+
+二叉树的顺序存储仅为完全二叉树，完全二叉树的父节点和左右孩子节点之间的顺序有对应关系
+若一个节点的索引为i，则其左孩子索引为2i，右孩子索引为2i+1，父节点为i / 2向下取整
+
+找双亲比较简单，但找孩子较为复杂
+
+2.孩子表示法 用二维数组存储 第一个维度为节点名称，第二个维度为指向此节点第一个孩子的指针
+
+以下三个结构体，越忘上层是越是基础的组成部分
+
+struct CTNode{
+    int child;                        
+    struct CTNode *next;  第二个维度中的基本组成成分
+};
+
+typedef struct {
+    ElemType data;
+    struct CTNode *firstChild;      数组的数组，这个结构体作为数组内部的数组
+} CTBox;
+
+typedef struct {
+    CTBox nodes[Max_TREE_SIZE];    一个二维数组，第一维度为data既节点名称， 第二维度为指向此节点第一个孩子节点的指针
+    int n, r;
+} CTree;
+
+找孩子比较简单，但找双亲较为复杂
+
+★★★3.孩子兄弟表示法 纯链式存储方式
+typedef struct CSNode{
+    ElemType data;
+    struct CSNode *firstChild, *nextSibling;      firstchile为第一个孩子节点指针，nextsibling为其右兄弟指针
+}CSNode, *CSTree;                                 其实与二叉树的结构类似，只不过二叉树存储结构中两个指针是左右孩子，这里的两个指针是第一个孩子和右兄弟
+ 
+
+
+
+
+ 
