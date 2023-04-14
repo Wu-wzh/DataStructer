@@ -76,7 +76,16 @@ char Find(DSU D, char A){
     return D.node[index].name;
 }
 
-// void Union(DSU D, char A)
+void Union(DSU *D, char root1, char root2){
+    if (root1 == root2) return;
+    int i = 0;
+    while (D->node[i].name != root1)
+        i++;
+    int j = 0;
+    while (D->node[j].name != root2)
+        j++;
+    D->node[j].parent = i;
+}
 int main(){
     DSU D;
     InitDSU(&D);
@@ -88,6 +97,8 @@ int main(){
     printf("输入要查找的字母(存在于并查集中)\n");
     scanf("%c", &A);
     printf("字母%c所在集合的根字母为%c\n",A, Find(D, A));
+    Union(&D, 'B', 'G');
+    PrintDSU(D);
 
     system("pause");
     return 0;
