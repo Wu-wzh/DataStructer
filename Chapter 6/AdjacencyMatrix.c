@@ -110,7 +110,7 @@ int FirstNeighbor(MGraph G, int x){
 //假设y是x的第一个邻接点，求x的下一个邻接点
 //与寻找第一个邻接点类似
 int NextNeighbor(MGraph G, int x, int y){
-    for (int i = y; i < G.vexnum; i++){
+    for (int i = y + 1; i < G.vexnum; i++){
         if (G.Edge[x][i] == 1) return i;
     }
     return -1;
@@ -127,12 +127,44 @@ void PrintGraph(MGraph G){
         printf("\n");
     }
 }
+
+//=======================================//
+//=======================================//
+//=======================================//
+//=======================================//
+
+void visit(MGraph G, int x){
+    printf("%s ", G.Vex[x]);
+}
+//图的遍历算法
+//与树的便利不同，遍历过程中可能出现多次遍历同一个顶点，因此需要一个visited数组来标记是否已经访问过此顶点
+
+
+//BFS广度优先遍历
+
+//从顶点v出发进行广度优先遍历
+void BFS(MGraph G, int v){
+
+    //初始化visited数组
+    int visited[G.vexnum];
+    for (int i = 0; i < G.vexnum; i++){
+        visited[i] = 0;
+    }
+
+    //开始遍历
+    visited[v] = 1;
+
+    
+}
+
 int main(){
     MGraph G;
     InitGraph(&G);
     CreateGraph(&G);
     PrintGraph(G);
-    Neighbors(G, 0);
+    // Neighbors(G, 0);
+    printf("%d\n", FirstNeighbor(G, 1));
+    printf("%d\n", NextNeighbor(G, 1, 0));
     system("pause");
     return 0;
 }
