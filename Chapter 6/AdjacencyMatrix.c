@@ -78,6 +78,48 @@ void Neighbors(MGraph G, int x){
     }
 }//O(|V|)
 
+//插入一个新的顶点(刚插入时不和任何边相连)
+void InsertVertex(MGraph* G, char x){
+    //将vexnum加一，并且将x赋值给最后一个顶点的名字
+    (*G).Vex[(*G).vexnum++] = x;
+}//O(1)
+
+//删除一个顶点
+//一种方法是吧此行和此列删除后，进行元素移动，但是由于移动的是三个分块矩阵
+//所以时间复杂度较高，因此采用添加一个标志位，删除时将此行此列全部赋值为0，并且标志位设为0即可
+void DeleteVertex(MGraph* G,int x){}
+//O(|V|)
+
+//添加已存在顶点x和y之间的边
+//利用随机存取的特性，极其简单
+void AddEdge(MGraph* G, int x, int y){
+    (*G).Edge[x][y] = 1;
+}//O(1)
+
+
+//★★易考的方法★★
+//找到顶点x的第一个邻接节点，在邻接矩阵中唯一
+//扫描x所在的行，找到第一个节点就return，没有return-1
+int FirstNeighbor(MGraph G, int x){
+    for (int i = 0; i < G.vexnum; i++){
+        if (G.Edge[x][i] == 1) return i;
+    }
+    return -1;
+}//O(1)~O(|V|)
+
+//假设y是x的第一个邻接点，求x的下一个邻接点
+//与寻找第一个邻接点类似
+int NextNeighbor(MGraph G, int x, int y){
+    for (int i = y; i < G.vexnum; i++){
+        if (G.Edge[x][i] == 1) return i;
+    }
+    return -1;
+}
+
+//有权图中的赋权操作，与Adjacent方法完全一致，实现简单
+int Get_edge_value(MGraph G, int x, int y){}
+int Set_edge_value(MGraph G, int x, int y){}
+
 void PrintGraph(MGraph G){
     for (int i = 0; i < G.vexnum; i++){
         for (int j = 0; j < G.vexnum; j++)

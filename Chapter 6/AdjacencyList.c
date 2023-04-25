@@ -126,6 +126,65 @@ void Neighbors(ALGraph G, int x){
     }
 }//O(|V| + |E|)
 
+//插入一个新的顶点(刚插入时不和任何边相连)
+void InsertVertex(ALGraph* G, char x){
+    //将vexnum加一，并且将x赋值给最后一个顶点的名字
+    (*G).vertices[(*G).vexnum++].data = x;
+}//O(1)
+
+//删除一个顶点
+//不仅要将顶点所在行的列表全部删除，还要遍历整个邻接表，删除所有关于此顶点的信息
+//因此最坏情况下需要遍历完全部的边
+void DeleteVertex(ALGraph* G,int x){}
+//O(|E|)
+
+//添加已存在顶点x和y之间的边
+//使用头插法更快，有向图和无向图操作略有不同
+void AddEdge(ALGraph* G, int x, int y){
+    if (G->isdir){ //有向图只需要对x的链表进行头插
+        ArcNode* t = (ArcNode*)malloc(sizeof(ArcNode));
+        t->adjvex = y;
+        //头插法，first为头节点
+        t->next = (*G).vertices[x].first->next;
+        (*G).vertices[x].first->next = t;
+    }
+    else{//无向图不仅需要对x，还要镜像对y的链表进行修改
+        ArcNode* t1 = (ArcNode*)malloc(sizeof(ArcNode));
+        t1->adjvex = y;
+        //头插法，first为头节点
+        t1->next = (*G).vertices[x].first->next;
+        (*G).vertices[x].first->next = t1;
+
+        ArcNode* t2 = (ArcNode*)malloc(sizeof(ArcNode));
+        t2->adjvex = x;
+        //头插法，first为头节点
+        t2->next = (*G).vertices[y].first->next;
+        (*G).vertices[x].first->next = t2;
+    }
+}//O(1)
+
+
+//★★易考的方法★★
+//找到顶点x的第一个邻接节点，在邻接表中可能唯一，因为链表是没有顺序的
+//扫描x的链表，找到第一个节点就return，没有return-1
+int FirstNeighbor(ALGraph G, int x){
+    if (G.vertices[x].first != NULL) return G.vertices[x].first->adjvex;
+    else return -1;
+}//O(1)
+//有向图寻找入边比较复杂，一般不使用邻接表
+//因此只考虑无向图和有向图出边的情况
+
+//假设y是x的第一个邻接点，求x的下一个邻接点
+//与寻找第一个邻接点类似
+int NextNeighbor(ALGraph G, int x, int y){
+    if (G.vertices[x].first->next != NULL) return G.vertices[x].first->next->adjvex;
+    else return -1;
+}
+
+//有权图中的赋权操作，与Adjacent方法完全一致，实现简单
+int Get_edge_value(ALGraph G, int x, int y){}
+int Set_edge_value(ALGraph G, int x, int y){}
+
 void PrintAdjList(ALGraph G){
     for (int i = 0; i < G.vexnum; i++){
         printf("%c : ",G.vertices[i].data);
