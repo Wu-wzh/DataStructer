@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
 #define MaxVertexNum 4
 
+//邻接多重表
 typedef struct EdgeNode {
     int vertex1;            // 边的两个端点
     int vertex2;
