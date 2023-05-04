@@ -3,7 +3,7 @@
 #define true 1
 #define false 0
 #define MaxVertexNum 10
-#define Infinte 10000;
+#define Infinte 10000
 typedef struct{
     char Vex[MaxVertexNum]; //用来存储顶点信息
     int Edge[MaxVertexNum][MaxVertexNum]; //用来存储边信息 在存储无权图时，可不使用int，避免空间的浪费
@@ -54,86 +54,41 @@ void CreateGraph(MGraph *G){
     }
 }
 
+void CreateGraph_My(MGraph *G)
+{
+    // 初始化图的边
+    InitGraph(G);
 
-//判断两个节点是否相邻 x y 为节点的标号，从0开始 
-//若使用节点名称，需要有一个名称到标号的转移过程，需要消耗更多的时间复杂度
-int Adjacent(MGraph G, int x, int y){
-    return G.Edge[x][y];
-}//O(1)
-
-//有权图中的赋权操作，与Adjacent方法完全一致，实现简单
-int Get_edge_value(MGraph G, int x, int y){
-    return G.Edge[x][y];
-}
-int Set_edge_value(MGraph* G, int x, int y, int w){
-    G->Edge[x][y] = w;
-}
-
-//输出一个节点所有的边
-void Neighbors(MGraph G, int x){
-    //有向图和无向图的处理方式不一样
-    if (G.isdir == 0){
-        for (int i = 0; i < G.vexnum; i++)
-        if (G.Edge[x][i] == 1) printf("%d ", i);
-        printf("\n");
+    (*G).vexnum = 6;
+    (*G).arcnum = 10;
+    (*G).isdir = 0;
+    
+    int c = 48;
+    for (int i = 0; i < G->vexnum; i++){
+        (*G).Vex[i] = c++;
     }
-    else{
-        for (int i = 0; i < G.vexnum; i++){ //有向图需要列和行同时遍历
-            if (G.Edge[x][i] == 1) printf("%d ", i);
-            if (G.Edge[i][x] == 1) printf("%d ", i);
+    
+
+    int arr[10][3] = {{0,1,6},{0,2,5},{0,3,1},{1,3,5},{1,4,3},{2,3,4},{2,5,2},{3,4,6},{3,5,4},{4,5,6}};
+    for (int i = 0; i < 10; i++){
+        for (int j = 0; j < 3; j++){
+            (*G).Edge[arr[i][0]][arr[i][1]] = arr[i][2];
+            (*G).Edge[arr[i][1]][arr[i][0]] = arr[i][2];
         }
-        printf("\n");
     }
-}//O(|V|)
-
-//插入一个新的顶点(刚插入时不和任何边相连)
-void InsertVertex(MGraph* G, char x){
-    //将vexnum加一，并且将x赋值给最后一个顶点的名字
-    (*G).Vex[(*G).vexnum++] = x;
-}//O(1)
-
-//删除一个顶点
-//一种方法是吧此行和此列删除后，进行元素移动，但是由于移动的是三个分块矩阵
-//所以时间复杂度较高，因此采用添加一个标志位，删除时将此行此列全部赋值为0，并且标志位设为0即可
-void DeleteVertex(MGraph* G,int x){}
-//O(|V|)
-
-//添加已存在顶点x和y之间的边
-//利用随机存取的特性，极其简单
-void AddEdge(MGraph* G, int x, int y){
-    (*G).Edge[x][y] = 1;
-}//O(1)
-
-
-//★★易考的方法★★
-//找到顶点x的第一个邻接节点，在邻接矩阵中唯一
-//扫描x所在的行，找到第一个节点就return，没有return-1
-int FirstNeighbor(MGraph G, int x){
-    for (int i = 0; i < G.vexnum; i++){
-        if (G.Edge[x][i] == 1) return i;
-    }
-    return -1;
-}//O(1)~O(|V|)
-
-//假设y是x的第一个邻接点，求x的下一个邻接点
-//与寻找第一个邻接点类似
-int NextNeighbor(MGraph G, int x, int y){
-    for (int i = y + 1; i < G.vexnum; i++){
-        if (G.Edge[x][i] == 1) return i;
-    }
-    return -1;
 }
 
 void PrintGraph(MGraph G){
     for (int i = 0; i < G.vexnum; i++){
         for (int j = 0; j < G.vexnum; j++)
-            printf("%d ", G.Edge[i][j] == 1 ? G.Edge[i][j]:0);
+            printf("%d ", G.Edge[i][j] >= 1 && G.Edge[i][j] < Infinte ? G.Edge[i][j] : 0);
         printf("\n");
     }
 }
 
 //Prim算法
 void Prim(MGraph G, int start){
+    int val = 0;//最小权值
     int lowCast[G.vexnum]; //记录当前树邻接节点的权值
     int isJoin[G.vexnum]; //标记各节点是否入树
     char prime[G.vexnum]; //最小生成树结果数组
@@ -164,8 +119,8 @@ void Prim(MGraph G, int start){
             }
             j++;
         }
-
-        prime[index++] = G.Vex[k]; //第一个顶点先入prime数组
+        val += min;
+        prime[index++] = G.Vex[k]; //顶点放入prime数组
         lowCast[k] = 0;//由于k顶点已经并入prime数组，将其lowCast设为0;
         isJoin[k] = 1;//k顶点已经完成
 
@@ -182,6 +137,7 @@ void Prim(MGraph G, int start){
     for (int i = 0; i < index; i++)
         printf("%c ", prime[i]);
     printf("\n");
+    printf("最小权值为：%d\n", val);
 
 }
 int main(){
