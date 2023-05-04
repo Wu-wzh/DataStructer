@@ -181,14 +181,42 @@ void BFSTraverse(MGraph G, int v){
     
 }
 //从顶点v出发进行广度优先遍历
+//空间复杂度：队列存储最多的情况为O(|V|)
+//时间复杂度：邻接矩阵：O(|V|^2)
+//邻接表：O(|V| + |E|)
 
 
+void DFS(MGraph G, int v){
+    visit(G, v);
+    visited[v] = 1;
+    for (int w = FirstNeighbor(G, v); w >= 0; w = NextNeighbor(G, v, w)){
+        if(!visited[w])
+            DFS(G, w);
+    }
+}//广度优先遍历用队列，深度优先遍历用递归，堆栈调用
+
+void DFSTraverse(MGraph G, int v){
+        int len = 1;//记录是第几个连通分量
+    //初始化visited数组（只需要初始化顶点数个就可以）
+    for (int i = 0; i < G.vexnum; i++){
+        visited[i] = 0;
+    }
+    printf("第%d个连通分量的DFS遍历结果为：", len++);
+    DFS(G, v);//先调用一次BFS至少遍历一个连通分量，之后检查是不是还有其他的连通分量
+    for (int i = 0; i < G.vexnum; i++){
+        if (!visited[i]){
+            printf("第%d个连通分量的BFS遍历结果为：", len++);
+            DFS(G, i);//遍历其他连通分量
+        }
+    }
+}
 int main(){
     MGraph G;
     InitGraph(&G);
     CreateGraph(&G);
     PrintGraph(G);
     BFSTraverse(G, 1);
+    DFSTraverse(G, 1);
     system("pause");
     return 0;
 }
