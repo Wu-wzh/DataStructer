@@ -8,7 +8,7 @@ typedef struct LNode{
     struct LNode* next;
 }LNode, *LinkList;
 
-//在实际使用中，想要使用指针既可以使用LNode*也可以使用LinkeList，
+//在实际使用中，想要使用指针既可以使用LNode*也可以使用LinkeList。
 //两者等价，但是一般要根据实际情况使用两者，如果代表的是一个列表，使用LinkList，如果代表的是一个单独的节点，则使用LNode*
 
 //此为带头节点的链表，带有头节点时会使得操作更加简单[
