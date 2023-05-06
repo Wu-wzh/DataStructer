@@ -1,3 +1,14 @@
+/*动态规划的思想：
+初始化带权距离矩阵和前驱节点矩阵
+若允许在v0中转，最短路为
+若允许在v0、v1中转，最短路为
+若允许在v0、v1、v2中转，最短路为
+......
+若允许在v0、v1、...、vn-1中转，最短路为
+
+并且此算法可以解决存在负权的图
+但无法解决带有负权回路的图
+*/
 #include <stdio.h>
 #include <windows.h>
 #define true 1
@@ -70,6 +81,7 @@ void CreateGraph_My(MGraph *G)
     
 
     int arr[10][3] = {{0,1,10},{0,4,5},{1,4,2},{4,1,3},{1,2,1},{4,3,2},{2,3,4},{3,2,6},{3,0,7},{4,2,9}};
+    // int arr[5][3] = {{0,1,6},{1,0,10},{0,2,13},{2,0,5},{1,2,4}};
     for (int i = 0; i < 10; i++){
         for (int j = 0; j < 3; j++){
             (*G).Edge[arr[i][0]][arr[i][1]] = arr[i][2];
@@ -87,86 +99,74 @@ void PrintGraph(MGraph G){
 }
 
 //Dijkstra算法
-void Dijkstra(MGraph G, int start){
-    int min_dis, index;//dist中的最短路径和对应的节点
-    int dist[G.vexnum]; //记录当前循环最短路径长度
-    int path[G.vexnum]; //记录当前循环各顶点的前驱顶点
-    char vex[G.vexnum]; //记录各顶点是否找到最短路径
-
-    //初始化vex、dist、path数组
-    dist[start] = 0; //开始节点到自己的最短路径为0
-    path[start] = -1; //开始节点无前驱
-    vex[start] = 1;
+void Floyd(MGraph G){
+    //初始化A(-1)和p(-1)矩阵
+    int A[G.vexnum][G.vexnum];
+    int p[G.vexnum][G.vexnum];
     for (int i = 0; i < G.vexnum; i++){
-        if (i == start) continue;
-        vex[i] = 0; //vex开始只有开始节点为1，其余都为0
-        dist[i] = G.Edge[start][i];
-        path[i] = G.Edge[start][i] == Infinte ? -1 : start;
-    }
-
-    //进行n-1次遍历
-    for (int i = 0; i < G.vexnum - 1; i++){
-        //找到dist中最小的值和对应的顶点
-        min_dis = Infinte; //初始化为无穷大
-        index = -1;//顶点初始化为-1
-        for (int i = 0; i < G.vexnum; i++){
-            if (!vex[i] && dist[i] < min_dis){
-                min_dis = dist[i];
-                index = i;
-            }
-        }
-        //找到的这个dist最小值就是到达index顶点的最短路径
-        //所以index顶点最短路径被找到了，将其vex设置为1
-        vex[index] = 1;
-        //更新dist
         for (int j = 0; j < G.vexnum; j++){
-            //若第j个顶点未找到最短路径，且index顶点到j顶点的距离更近，就更新dist的值
-            //并且将第j个顶点的前驱节点改为index
-            if (!vex[j] && G.Edge[index][j] + min_dis < dist[j]){
-                dist[j] = G.Edge[index][j] + min_dis;
-                path[j] = index;
-            } //经过此操作之后，dist中的无穷也将被替换
-        }    
-    }//Dijkstra算法主体完成
-
-    //以下为输出结果
-    printf("dist：");
-    for (int i = 0; i < G.vexnum; i++)
-    {
-        printf("%d ", dist[i]);
-    }
-    printf("\n");
-    printf("path：");
-    for (int i = 0; i < G.vexnum; i++)
-    {
-        printf("%d ", path[i]);
-    }
-    printf("\n");
-    for (int i = 0; i < G.vexnum; i++){
-        if (i == start) continue;
-        printf("顶点%d到顶点%d的最短路径长度为：%d，最短路径为：", start, i, dist[i]);
-        printf("%d", i);
-        int temp = path[i];
-        while (temp > 0){
-            printf("<--%d", temp);
-            temp  = path[temp];
+            A[i][j] = G.Edge[i][j];//初始化A为不经过任何顶点的距离，即初始路径矩阵
+            p[i][j] = -1; 
+            //p矩阵初始化为全-1，表示现在不经过任何节点，因此没有前驱节点
         }
-        printf("<--%d", start);
+    }
+    
+    //循环主体
+    for (int k = 0; k < G.vexnum; k++) //以顶点v<=k为中转
+        for (int i = 0; i < G.vexnum; i++) //进行A矩阵的遍历
+            for (int j = 0; j < G.vexnum; j++)
+                //若从以k节点为中继，所得到的路径小于当前的路径，则进行替换
+                if (A[i][k] + A[k][j] < A[i][j]){
+                    A[i][j] = A[i][k] + A[k][j];
+                    p[i][j] = k; //并且更新前驱顶点p的信息
+                }
+
+    //打印输出
+    printf("A矩阵：\n");
+    for (int i = 0; i < G.vexnum; i++){
+        for (int j = 0; j < G.vexnum; j++){
+            printf("%d ", A[i][j]);
+        }
         printf("\n");
     }
-    
+    printf("p矩阵：\n");
+    for (int i = 0; i < G.vexnum; i++){
+        for (int j = 0; j < G.vexnum; j++){
+            printf("%d ", p[i][j]);
+        }
+        printf("\n");
+    }
+    int temp;
+    for (int i = 0; i < G.vexnum; i++){
+        for (int j = 0; j < G.vexnum; j++){
+            if (i == j) continue;
+            if (A[i][j] != Infinte){
+                printf("顶点%d与顶点%d的最短路径长度为：%d，",i, j, A[i][j]);
+                printf("最短路径为：%d", i);
+                temp = j;
+                while (p[i][temp] > 0){
+                    temp = p[i][temp];
+                    printf("-->%d", temp);
+                }
+                printf("-->%d", j);
+                printf("\n");
+            }
+            else{
+                printf("顶点%d与顶点%d的最短路径长度不存在\n",i, j);
+            }
+        }
         
-    
+    }
     
 }
+
 int main(){
     MGraph G;
     InitGraph(&G);
     CreateGraph_My(&G);
     PrintGraph(G);
-    //Dijkstra和Prime算法很像
-    //两者的时间复杂度都是O(n^2)
-    Dijkstra(G, 0);   
+    //三重for循环，时间复杂度为O(n^3)
+    Floyd(G);
     system("pause");
     return 0;
 }
