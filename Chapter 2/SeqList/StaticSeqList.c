@@ -2,7 +2,7 @@
 #include <windows.h>
 #define MaxSize 10
 typedef struct{
-    //two attribute ,one data of seqlist ,anotherlength now;
+    //two attribute ,one data of seqlist ,anotherlength now
     int data[MaxSize]; 
     int length;
 }SeqList;
