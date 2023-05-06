@@ -17,7 +17,7 @@ void InitSpace(SLNode *space) {
 }
 
 int Malloc(SLNode *space) {
-    // 从静态链表中分配一个空间，返回该空间的下标
+    // 从静态链表中分配一个空间，返回该空间的下标。
     int i = space[0].cur;
     if (space[0].cur)
         space[0].cur = space[i].cur;
