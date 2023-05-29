@@ -33,7 +33,7 @@ int ListInsert(SSTable *L, int i, int e){
 }
 
 int CreateTable(SSTable *S){
-    printf("输入顺序查找表内容(以666为结束)：\n");
+    printf("输入顺序查找表内容(有序表,以666为结束)：\n");
     int x, i = 0;
     scanf("%d", &x);
     while (x != 666){

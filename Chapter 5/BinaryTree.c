@@ -203,9 +203,9 @@ void PreOrder_NoRecursion(BiTree T){
 //中序遍历
 void InOrder(BiTree T){
     if (T != NULL){
-        PreOrder(T->left);
+        InOrder(T->left);
         printf("%d\n", T->data);
-        PreOrder(T->right);
+        InOrder(T->right);
     }
 }
 //非递归实现的中序遍历
