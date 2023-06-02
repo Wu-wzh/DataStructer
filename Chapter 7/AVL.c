@@ -1,77 +1,120 @@
 #include <stdio.h>
-#include <windows.h>
-#define true 1
-#define false 0
+#include <stdlib.h>
 
-typedef struct AVLNode
-{
+typedef struct AVLNode {
     int data;
-    int balance; //平衡二叉树的平衡因子
-    struct AVLNode *left, *right;
-}AVLNode, *AVLTree;
+    int balance; // 平衡因子
+    struct AVLNode* left;
+    struct AVLNode* right;
+} AVLNode;
 
-//中序遍历
-void InOrder(AVLTree T){
-    if (T != NULL){
-        InOrder(T->left);
-        printf("%d\n", T->data);
-        InOrder(T->right);
+typedef AVLNode* AVLTree;
+
+// 计算节点的高度
+int Height(AVLNode* node) {
+    if (node == NULL) {
+        return 0;
     }
-}
-//二叉排序树实现，返回BSTNode的指针
-//非递归查找空间复杂度为O(1)
-AVLNode *BST_Search(AVLTree T, int key){
-    AVLNode *p = T;
-    while (p != NULL && key != p->data){
-        if (key < p->data) p = p->left; //若此节点小于key，由二叉排序树的定义，向此节点的左树寻找
-        else p = p->right; //否则向右树寻找
-    }
-    return T;
+    int leftHeight = Height(node->left);
+    int rightHeight = Height(node->right);
+    return (leftHeight > rightHeight) ? leftHeight + 1 : rightHeight + 1;
 }
 
-//递归查找 空间复杂度为O(h)
-AVLNode *BST_Search_R(AVLTree T, int key){}
-
-//平很二叉树的插入操作，按照普通二叉排序树的插入之后，会使得二叉树不再平衡，因此需要再进一步将树平衡化
-
-//递归实现
-int BST_Insert(AVLTree *T, int key){
-    if ((*T) == NULL){
-        (*T) = (AVLTree)malloc(sizeof(AVLNode));
-        (*T)->data = key;
-        (*T)->left = (*T)->right = NULL;
-        return 1;
+// 计算节点的平衡因子
+int BalanceFactor(AVLNode* node) {
+    if (node == NULL) {
+        return 0;
     }
-    else if ((*T)->data == key) return 0; //二叉排序树中已经存在了此节点
-    else if (key < (*T)->data) return BST_Insert(&((*T)->left), key); //key小于此节点，应该在此节点的左孩子插入
-    else if (key > (*T)->data) return BST_Insert(&((*T)->right), key); //key大于此节点，应该在此节点的右孩子插入
+    return Height(node->left) - Height(node->right);
 }
 
-//二叉树的删除过程，相比于插入操作更为复杂，需要区分多个情况
-/*
-1.待删除结点是叶子节点，直接删除即可
-2.待删除结点只有一颗左子树或右子树，删除此节点之后让其子树的根节点替代自己
-3.待删除结点即有左子树又有右子树，最复杂，有多种策略，后续学习平衡二叉树之后，会有最好的策略。
-①找到此节点右子树中最小的节点（最左边）
-②找到此节点左子树中最大的节点（最右边）
-*/
+// 左旋操作
+AVLNode* LeftRotate(AVLNode* node) {
+    AVLNode* newRoot = node->right;
+    node->right = newRoot->left;
+    newRoot->left = node;
+    // 更新平衡因子
+    node->balance = BalanceFactor(node);
+    newRoot->balance = BalanceFactor(newRoot);
+    return newRoot;
+}
 
-//二叉排序树的建立过程，对str的数据逐一进行插入操作
-void Create_BST(AVLTree *T, int str[], int n){
-    (*T) = NULL;
-    int i = 0;
-    while (i < n){
-        BST_Insert(T, str[i]);
-        i++;
+// 右旋操作
+AVLNode* RightRotate(AVLNode* node) {
+    AVLNode* newRoot = node->left;
+    node->left = newRoot->right;
+    newRoot->right = node;
+    // 更新平衡因子
+    node->balance = BalanceFactor(node);
+    newRoot->balance = BalanceFactor(newRoot);
+    return newRoot;
+}
+
+// 插入操作
+AVLNode* Insert(AVLNode* root, int key) {
+    if (root == NULL) {
+        AVLNode* newNode = (AVLNode*)malloc(sizeof(AVLNode));
+        newNode->data = key;
+        newNode->balance = 0;
+        newNode->left = newNode->right = NULL;
+        return newNode;
+    }
+    if (key < root->data) {
+        root->left = Insert(root->left, key);
+    } else if (key > root->data) {
+        root->right = Insert(root->right, key);
+    } else {
+        // 若已存在相同节点，则不进行插入操作
+        return root;
+    }
+
+    // 更新平衡因子
+    root->balance = BalanceFactor(root);
+
+    // 平衡维护
+    if (root->balance > 1) {
+        if (key < root->left->data) {
+            // LL型，进行右旋操作
+            root = RightRotate(root);
+        } else if (key > root->left->data) {
+            // LR型，先左旋后右旋
+            root->left = LeftRotate(root->left);
+            root = RightRotate(root);
+        }
+    } else if (root->balance < -1) {
+        if (key > root->right->data) {
+            // RR型，进行左旋操作
+            root = LeftRotate(root);
+        } else if (key < root->right->data) {
+            // RL型，先右旋后左旋
+            root->right = RightRotate(root->right);
+            root = LeftRotate(root);
+        }
+    }
+
+    return root;
+}
+
+// 中序遍历
+void InOrder(AVLNode* root) {
+    if (root != NULL) {
+        InOrder(root->left);
+        printf("%d\n", root->data);
+        InOrder(root->right);
     }
 }
-//从以上的二叉排序树的建立过程可以看出，查询操作的时间复杂度取决于二叉排序树的高度，因此如何让二叉排序数的查找速度更快，
-//即让树变得更加"平衡"，由此有了平衡二叉树的概念。
-int main(){
-    AVLTree T;
-    int str[8] = {50, 66, 60, 26, 21, 30, 70, 68};
-    Create_BST(&T, str, 8);
-    InOrder(T);
+
+int main() {
+    AVLNode* root = NULL;
+    int keys[] = {50, 66, 60, 26, 21, 30, 70, 68};
+    int numKeys = sizeof(keys) / sizeof(keys[0]);
+
+    for (int i = 0; i < numKeys; i++) {
+        root = Insert(root, keys[i]);
+    }
+
+    InOrder(root);
+
     system("pause");
-    return 0; 
+    return 0;
 }
